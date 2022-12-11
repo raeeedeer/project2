@@ -57,15 +57,15 @@ def accSetter(currAcc,Maxacc):
         Maxacc = currAcc
         return Maxacc
 
-def colEdit(seenFeatures, finalCol,featureAcc,fd,algo):
-    if algo == '1':
-        seenFeatures.add(finalCol)    
-        s_c = copy.deepcopy(seenFeatures)
-        fd[featureAcc] = s_c
-    elif algo == '2':
-        seenFeatures.remove(finalCol)
-        s_c = copy.deepcopy(seenFeatures)
-        fd[featureAcc] = s_c
+# def colEdit(seenFeatures, finalCol,featureAcc,fd,algo):
+#     if algo == '1':
+#         seenFeatures.add(finalCol)    
+#         s_c = copy.deepcopy(seenFeatures)
+#         fd[featureAcc] = s_c
+#     elif algo == '2':
+#         seenFeatures.remove(finalCol)
+#         s_c = copy.deepcopy(seenFeatures)
+#         fd[featureAcc] = s_c
 
 def distCalc(distance,nDist):
     if distance <= nDist:
@@ -81,36 +81,31 @@ def forwardSearch(data, Fnum):
         finalj = 0
         for j in range(1, Fnum):
             if j not in seenFeatures:
-                # We need to deep copy as Python does pass by reference for function calls
-                s_temp = copy.deepcopy(seenFeatures)
 
-                # Temporarily add the row we're looking at into the set
+                # deep copy since python does not support ref calls 
+                s_temp = copy.deepcopy(seenFeatures)
                 s_temp.add(j)
 
 
-                # Deep copy the dataframe as it will get updated in the function
+                # Deep copy the DF
                 FTA = data.copy(deep=True)[:-1]
                 accuracy = leave_one_out_cross_validation(Fnum, s_temp, FTA)
                 j_temp = j
 
-                # Printing float as a nice percent:
-                # https://www.kite.com/python/answers/how-to-print-a-float-with-two-decimal-places-in-python
                 print('Using feature(s) ' + str(s_temp) + ' accuracy is ' + "{:.1%}".format(accuracy))
 
-                # Update the max accuracy if we find a better accuracy, update the index too
-                
+                #update accuracy if new higher accuracy is found
                 if accuracy >= maxaccuracy:
                     maxaccuracy = accSetter(accuracy,maxaccuracy)
                     f_accuracy = accuracy
                     finalj = j_temp
 
-        # Add best column in the set, for real
+        # Add best column 
         seenFeatures.add(finalj)
         s_c = copy.deepcopy(seenFeatures)
         fd[f_accuracy] = s_c
 
-        # Printing float as a nice percent:
-        # https://www.kite.com/python/answers/how-to-print-a-float-with-two-decimal-places-in-python
+        # float as percent:
         print('Feature set ' + str(seenFeatures) + ' was best, accuracy is ' + "{:.1%}".format(f_accuracy) + '\n')
 
         getResult(fd)
@@ -121,14 +116,12 @@ def backwardElimination(data, Fnum):
         seen_features.add(j)
     fd = {}
 
-    # Do the first iteration of a full set outside the loop
+    #first full iteration must be done outside of loop
     s_temp = copy.deepcopy(seen_features)
 
     FTA = data.copy(deep=True)
     accuracy = leave_one_out_cross_validation(Fnum, s_temp, FTA)
 
-    # Printing float as a nice percent:
-    # https://www.kite.com/python/answers/how-to-print-a-float-with-two-decimal-places-in-python
     print('Using feature(s) ' + str(s_temp) + ' accuracy is ' + "{:.1%}".format(accuracy))
     print('Feature set ' + str(s_temp) + ' was best, accuracy is ' + "{:.1%}".format(accuracy) + '\n')
 
@@ -138,13 +131,13 @@ def backwardElimination(data, Fnum):
 
         for j in range(1, Fnum):
             if j in seen_features:
-                # We need to deep copy as Python does pass by reference for function calls
                 s_temp = copy.deepcopy(seen_features)
-                # Temporarily remove from the set
+
+                # Temporarily remove 
                 s_temp.remove(j)
 
                
-                # Deep copy the dataframe as it will get updated in the function
+                # Deep copy df so its updated in function as well
                 FTA = data.copy(deep=True)
 
                 accuracy = leave_one_out_cross_validation(Fnum, s_temp, FTA)
@@ -153,13 +146,14 @@ def backwardElimination(data, Fnum):
                 # Printing float 
                 print('Using feature(s) ' + str(s_temp) + ' accuracy is ' + "{:.1%}".format(accuracy))
 
-                # Update the max accuracy if we find a better accuracy, update the index too
+                #update accuracy if new higher accuracy is found 
                 if accuracy >= maxaccuracy:
                     maxaccuracy = accSetter(accuracy,maxaccuracy)
                     f_accuracy = accuracy
+                    #update index
                     finalj = j_temp
 
-        # Remove best column in the set 
+        # Remove best column 
         seen_features.remove(finalj)
         s_c = copy.deepcopy(seen_features)
         fd[f_accuracy] = s_c
@@ -212,6 +206,7 @@ def leave_one_out_cross_validation(Data, seen, FTA):
         if LOC == nlabel:
             numClassified += 1
     accuracy = numClassified/nr
+    #return updated accuracy
     return accuracy
 
 
