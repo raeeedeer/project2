@@ -38,19 +38,19 @@ def algoSelector(fn,nFeatures):
         df = pd.read_fwf(fn, header=None)
         # Reading in file into dataframe:
         # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_fwf.html
-        forward_search(df,nFeatures)
+        forwardSearch(df,nFeatures)
         print('Time used: ' + str(round(time.time()-start, 2)) + 'seconds.')
     elif algo == '2':
         start = time.time()
         # Reading in file into dataframe:
         # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_fwf.html
         df = pd.read_fwf(fn, header=None)
-        backward_search(df,nFeatures)
+        backwardElimination(df,nFeatures)
         print('Time used: ' + str(round(time.time()-start, 2)) + ' seconds.')
 
 def getResult(featureD):
     print('Finished search, best feature subset is ' + str(featureD[max(featureD.keys())]) +
-        ' with accuracyacy of ' + "{:.1%}".format(max(featureD.keys())) + '\n')
+        ' with accuracy of ' + "{:.1%}".format(max(featureD.keys())) + '\n')
 
 def accSetter(currAcc,Maxacc):
     if currAcc >= Maxacc:
@@ -72,12 +72,12 @@ def distCalc(distance,nDist):
         nDist = distance
     return nDist
        
-def forward_search(data, Fnum):
+def forwardSearch(data, Fnum):
     seenFeatures = set()
     fd = {}
 
     for i in range(1, Fnum):
-        maxaccuracyacy = 0
+        maxaccuracy = 0
         finalj = 0
         for j in range(1, Fnum):
             if j not in seenFeatures:
@@ -95,12 +95,12 @@ def forward_search(data, Fnum):
 
                 # Printing float as a nice percent:
                 # https://www.kite.com/python/answers/how-to-print-a-float-with-two-decimal-places-in-python
-                print('Using feature(s) ' + str(s_temp) + ' accuracyacy is ' + "{:.1%}".format(accuracy))
+                print('Using feature(s) ' + str(s_temp) + ' accuracy is ' + "{:.1%}".format(accuracy))
 
-                # Update the max accuracyacy if we find a better accuracyacy, update the index too
+                # Update the max accuracy if we find a better accuracy, update the index too
                 
-                if accuracy >= maxaccuracyacy:
-                    maxaccuracyacy = accSetter(accuracy,maxaccuracyacy)
+                if accuracy >= maxaccuracy:
+                    maxaccuracy = accSetter(accuracy,maxaccuracy)
                     f_accuracy = accuracy
                     finalj = j_temp
 
@@ -111,11 +111,11 @@ def forward_search(data, Fnum):
 
         # Printing float as a nice percent:
         # https://www.kite.com/python/answers/how-to-print-a-float-with-two-decimal-places-in-python
-        print('Feature set ' + str(seenFeatures) + ' was best, accuracyacy is ' + "{:.1%}".format(f_accuracy) + '\n')
+        print('Feature set ' + str(seenFeatures) + ' was best, accuracy is ' + "{:.1%}".format(f_accuracy) + '\n')
 
         getResult(fd)
 
-def backward_search(data, Fnum):
+def backwardElimination(data, Fnum):
     seen_features = set()
     for j in range(1, Fnum):
         seen_features.add(j)
@@ -129,11 +129,11 @@ def backward_search(data, Fnum):
 
     # Printing float as a nice percent:
     # https://www.kite.com/python/answers/how-to-print-a-float-with-two-decimal-places-in-python
-    print('Using feature(s) ' + str(s_temp) + ' accuracyacy is ' + "{:.1%}".format(accuracy))
-    print('Feature set ' + str(s_temp) + ' was best, accuracyacy is ' + "{:.1%}".format(accuracy) + '\n')
+    print('Using feature(s) ' + str(s_temp) + ' accuracy is ' + "{:.1%}".format(accuracy))
+    print('Feature set ' + str(s_temp) + ' was best, accuracy is ' + "{:.1%}".format(accuracy) + '\n')
 
     for i in range(2, Fnum):
-        maxaccuracyacy = 0
+        maxaccuracy = 0
         finalj = 0
 
         for j in range(1, Fnum):
@@ -151,11 +151,11 @@ def backward_search(data, Fnum):
                 j_temp = j
 
                 # Printing float 
-                print('Using feature(s) ' + str(s_temp) + ' accuracyacy is ' + "{:.1%}".format(accuracy))
+                print('Using feature(s) ' + str(s_temp) + ' accuracy is ' + "{:.1%}".format(accuracy))
 
-                # Update the max accuracyacy if we find a better accuracyacy, update the index too
-                if accuracy >= maxaccuracyacy:
-                    maxaccuracyacy = accSetter(accuracy,maxaccuracyacy)
+                # Update the max accuracy if we find a better accuracy, update the index too
+                if accuracy >= maxaccuracy:
+                    maxaccuracy = accSetter(accuracy,maxaccuracy)
                     f_accuracy = accuracy
                     finalj = j_temp
 
@@ -165,7 +165,7 @@ def backward_search(data, Fnum):
         fd[f_accuracy] = s_c
 
         # Printing float percent:
-        print('Feature set ' + str(seen_features) + ' was best, accuracyacy is ' + "{:.1%}".format(f_accuracy) + '\n')
+        print('Feature set ' + str(seen_features) + ' was best, accuracy is ' + "{:.1%}".format(f_accuracy) + '\n')
         print('\n')
 
         getResult(fd)
